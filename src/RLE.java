@@ -8,28 +8,45 @@ public class RLE {
     public static void compress(InputStream is, OutputStream os) {
         try {
             byte[] bytes = is.readAllBytes();
-            List<Byte> li = new ArrayList<>();
             byte cont = 0;
-            boolean esLaMateixaLletra;
+            int contNum = 0;
+            boolean si;
 
             for (int i = 0 ; i < bytes.length ; i++) {
-                esLaMateixaLletra = i >= 2  && bytes[i - 1] == bytes[i] ;
-                if (esLaMateixaLletra){
-                    cont++;
-                }else{
-                    if (cont > 0){
-                        li.add(cont);
-                        cont = 0;
-                    }else {
-                        li.add(bytes[i]);
+                if (i >= 1  && bytes[i - 1] == bytes[i]){
+                    contNum++;
+                    si = true;
+                    if (contNum == 257){
+                            os.write(cont);
+                            cont = 0;
+                            contNum = 0;
                     }
+                }else {
+                    si = false;
                 }
-                if (i+1 == bytes.length && cont > 0){
-                    li.add(cont);
+                    if (contNum > 1 && si) {
+                        cont++;
+                    } else {
+                        if (cont > 0) {
+                            os.write(cont);
+                            cont = 0;
+                            contNum = 0;
+                            if (i + 1 == bytes.length  && bytes[i - 1] != bytes[i]) os.write(bytes[i]);
+                        } else {
+                            os.write(bytes[i]);
+                            if ((i >= 1 && bytes[i - 1] == bytes[i]) && ((i + 1 < bytes.length && bytes[i] != bytes[i + 1])
+                                    || i + 1 == bytes.length)) {
+                                os.write(cont);
+                                cont = 0;
+                                contNum = 0;
+                            }
+                        }
+
+                    }
+
                 }
-            }
-            for (int i = 0; i < li.size(); i++) {
-                os.write(li.get(i));
+            if (cont > 0){
+                os.write(cont);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -38,6 +55,11 @@ public class RLE {
     }
 
     public static void decompress(InputStream is, OutputStream os) {
-
+        try {
+            byte[] bytes = is.readAllBytes();
+            List<Byte> li = new ArrayList<>();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
