@@ -7,9 +7,12 @@ import java.util.List;
 
 public class LZW {
     public static void compress(InputStream is, OutputStream os) throws IOException {
+        /*Bateria de variables que utilitzem.*/
         byte[] bytes = is.readAllBytes();
         List<Byte> list = new ArrayList<>();
         byte pos = 0;
+
+
         for (int i = 0; i < bytes.length; i++) {
             if (list.size() == 256 * 2) {
                 ferNetSaLListta(list, os);
@@ -23,21 +26,28 @@ public class LZW {
             }
         }
         ferNetSaLListta(list, os);
+        is.close();
         os.close();
     }
 
     private static byte aconseguirPosDelByte(byte[] bytes, List<Byte> list, byte pos, int i) {
         int l = 1;
-        boolean si = false;
+        boolean elByteIndexEsUn0 = false;
         for (int j = 1; j < list.size(); j = j + 2) {
-            si = bytes[i] == list.get(j) && pos == list.get(j - 1);
-            if (si) {
+            elByteIndexEsUn0 = bytes[i] == list.get(j) && pos == list.get(j - 1);
+            if (elByteIndexEsUn0) {
                 pos = (byte) (l);
                 break;
             }
             l++;
         }
-        if (!si) {
+        pos = afegirByteYPosSiElByteIndexEsUn0(bytes, list, pos, i, elByteIndexEsUn0);
+        return pos;
+    }
+
+    private static byte afegirByteYPosSiElByteIndexEsUn0(byte[] bytes, List<Byte> list, byte pos, int i,
+                                                         boolean elByteIndexEsUn0) {
+        if (!elByteIndexEsUn0) {
             list.add(pos);
             pos = 0;
             list.add(bytes[i]);
@@ -53,48 +63,32 @@ public class LZW {
 
     public static void decompress(InputStream is, OutputStream os) throws IOException {
         byte[] bytes = is.readAllBytes();
-        byte contingut;
-        int index = 0;
-        boolean temp = false;
-        byte [] bytes1 = new byte[256];
-        List<Byte> list = new ArrayList<>();
         for (int i = 1; i < bytes.length;  i = i + 2) {
-            index = bytes[i - 1];
-            if (index < 0) index = index + 256;
-            contingut = bytes[i];
+            int index = bytes[i - 1];
+            index = index < 0 ? index + 256 : index;
             if (index == 0){
-                list.add(contingut);
-            }else if (i < (255 * 2)){
-                escriureBytes(index,contingut,bytes,list);
-            } else if (i % (255 * 2) == 0){
-                bytes1 = new byte[256];
-                for (int j = 0; j < bytes1.length; j++) {
-                    bytes1[j] = bytes[i + j];
-                }
-                temp = true;
+                os.write(bytes[i]);
+            }else{
+                escriureBytes(index,bytes[i],bytes,os);
             }
-
-            if (temp){
-                escriureBytes(index,contingut,bytes1,list);
-            }
-            System.out.println(list);
         }
-        ferNetSaLListta(list,os);
+        is.close();
+        os.close();
     }
 
-    private static void escriureBytes(int index, byte contingut, byte[] bytes,List<Byte> list){
-         int index1 = (index * 2);
+    private static void escriureBytes(int index, byte contingut, byte[] bytes, OutputStream os) throws IOException {
+        int index1 = (index * 2);
         List<Byte> li = new ArrayList<>();
             while (index1 != 0){
                 li.add(contingut);
                 contingut = bytes[index1 - 1];
                 index1 = bytes[index1 - 2];
+                if (index1 < 0) index1 = index1 + 256;
                 index1 = index1 * 2;
             }
             li.add(contingut);
-
         for (int i = li.size() - 1; i >= 0; i--) {
-            list.add(li.get(i));
+            os.write(li.get(i));
         }
     }
 }
