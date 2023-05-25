@@ -51,7 +51,50 @@ public class LZW {
         }
     }
 
-    public static void decompress(InputStream is, OutputStream os) {
-        
+    public static void decompress(InputStream is, OutputStream os) throws IOException {
+        byte[] bytes = is.readAllBytes();
+        byte contingut;
+        int index = 0;
+        boolean temp = false;
+        byte [] bytes1 = new byte[256];
+        List<Byte> list = new ArrayList<>();
+        for (int i = 1; i < bytes.length;  i = i + 2) {
+            index = bytes[i - 1];
+            if (index < 0) index = index + 256;
+            contingut = bytes[i];
+            if (index == 0){
+                list.add(contingut);
+            }else if (i < (255 * 2)){
+                escriureBytes(index,contingut,bytes,list);
+            } else if (i % (255 * 2) == 0){
+                bytes1 = new byte[256];
+                for (int j = 0; j < bytes1.length; j++) {
+                    bytes1[j] = bytes[i + j];
+                }
+                temp = true;
+            }
+
+            if (temp){
+                escriureBytes(index,contingut,bytes1,list);
+            }
+            System.out.println(list);
+        }
+        ferNetSaLListta(list,os);
+    }
+
+    private static void escriureBytes(int index, byte contingut, byte[] bytes,List<Byte> list){
+         int index1 = (index * 2);
+        List<Byte> li = new ArrayList<>();
+            while (index1 != 0){
+                li.add(contingut);
+                contingut = bytes[index1 - 1];
+                index1 = bytes[index1 - 2];
+                index1 = index1 * 2;
+            }
+            li.add(contingut);
+
+        for (int i = li.size() - 1; i >= 0; i--) {
+            list.add(li.get(i));
+        }
     }
 }
