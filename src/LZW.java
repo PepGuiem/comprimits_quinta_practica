@@ -64,9 +64,9 @@ public class LZW {
             contingut = bytes[i];
             if (index == 0){
                 list.add(contingut);
-            }else if (i < 255){
+            }else if (i < (255 * 2)){
                 escriureBytes(index,contingut,bytes,list);
-            } else if (i % 255 == 0){
+            } else if (i % (255 * 2) == 0){
                 bytes1 = new byte[256];
                 for (int j = 0; j < bytes1.length; j++) {
                     bytes1[j] = bytes[i + j];
@@ -85,7 +85,6 @@ public class LZW {
     private static void escriureBytes(int index, byte contingut, byte[] bytes,List<Byte> list){
          int index1 = (index * 2);
         List<Byte> li = new ArrayList<>();
-        try {
             while (index1 != 0){
                 li.add(contingut);
                 contingut = bytes[index1 - 1];
@@ -93,9 +92,6 @@ public class LZW {
                 index1 = index1 * 2;
             }
             li.add(contingut);
-        }catch (ArrayIndexOutOfBoundsException e){
-            System.out.println(index1);
-        }
 
         for (int i = li.size() - 1; i >= 0; i--) {
             list.add(li.get(i));
