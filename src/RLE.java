@@ -21,10 +21,10 @@ public class RLE {
                 /*Si contNum es igual a 257*/
                 if (contNum == 257) {
 
-                    /*Escrivim el contador a l'arxiu*/
+                    /*Escrivim el comptador a l'arxiu*/
                     os.write(cont);
 
-                    /*I fem que els contadors tornin a tenir un valor de 0*/
+                    /*I fem que els comptadors tornin a tenir un valor de 0*/
                     cont = 0;
                     contNum = 0;
                 }
@@ -33,7 +33,7 @@ public class RLE {
             /*Si contNum és major a 1 i l'anterior byte és el mateix que l'actual*/
             if (contNum > 1 && bytes[i - 1] == bytes[i]) {
 
-                /*Sumem 1 al contador*/
+                /*Sumem 1 al comptador*/
                 cont++;
 
                 /*Si no*/
@@ -53,7 +53,7 @@ public class RLE {
         /*Si cont és major a 0*/
         if (cont > 0) {
 
-            /*Afegim el contador a l'arxiu*/
+            /*Afegim el comptador a l'arxiu*/
             os.write(cont);
         }
 
@@ -62,18 +62,18 @@ public class RLE {
         os.close();
     }
 
-    /*Funció per aconseguir el cont i contNum i escriure a l'arxiu els bytes o/i el contador*/
+    /*Funció per aconseguir el cont i contNum i escriure a l'arxiu els bytes o/i el comptador*/
     private static int[] aconseguirContIContNum(int cont, int contNum, OutputStream os, byte[] bytes, int i)
             throws IOException {
 
-        /*Si contador no es igual a 0*/
+        /*Si comptador no es igual a 0*/
         if (cont != 0) {
 
-            /*Escrivim a l'arxiu el contador i el byte*/
+            /*Escrivim a l'arxiu el comptador i el byte*/
             os.write(cont);
             os.write(bytes[i]);
 
-            /*I posem els contador a 0*/
+            /*I posem els comptador a 0*/
             cont = 0;
             contNum = 0;
 
@@ -86,7 +86,7 @@ public class RLE {
             /*I si es compleix la funció*/
             if (seHaDeAfegirElComptador(bytes, i)) {
 
-                /*Escrivim el contador i tornem a posar a 0 el contNum*/
+                /*Escrivim el comptador i tornem a posar a 0 el contNum*/
                 os.write(cont);
                 contNum = 0;
             }
@@ -96,9 +96,9 @@ public class RLE {
         return new int[]{cont, contNum};
     }
 
-    /*Si i és major o igual a 1 i el byte anterior i actual són iguals, i, i + 1 és menor a la longitud
-    del array de bytes i el byte actual és diferent del seguent o finalment i + 1 és igual a la longitud
-     del array del byte.*/
+    /*Si i és major o igual a 1 i el byte anterior i actual són iguals, i, si i + 1 és menor a la longitud
+    de l'array de bytes i el byte actual és diferent del següent o finalment i + 1 és igual a la longitud
+     de l'array del byte.*/
     private static boolean seHaDeAfegirElComptador(byte[] bytes, int i) {
         return (i >= 1 && bytes[i - 1] == bytes[i]) && ((i + 1 < bytes.length && bytes[i] != bytes[i + 1])
                 || i + 1 == bytes.length);
@@ -120,9 +120,8 @@ public class RLE {
         os.close();
     }
 
-    private static void afegirNombres(byte aByte, byte aByte1, OutputStream os) throws IOException {
-        int temp = aByte1;
-        if (aByte1 < 0) temp = aByte1 & 0xff;
+    private static void afegirNombres(byte aByte, byte quantitatDeBytes, OutputStream os) throws IOException {
+        int temp = quantitatDeBytes & 0xff;
         for (int i = 0; i < temp; i++) {
             os.write(aByte);
         }
