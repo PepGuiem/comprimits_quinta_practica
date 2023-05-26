@@ -62,7 +62,7 @@ public class LZW {
         /*Bucle que recorri tots els elements de la llista*/
         for (int j = 1; j < list.size(); j += 2) {
 
-            /*Si el byte del qual ens passa és igual al de la llista i la posició és la mateixa ens dona true*/
+            /*Si el byte del qual ens passa és igual al de la llista i la posició és la mateixa ens dona true.*/
             elByteIndexEsUn0 = bytes[i] == list.get(j) && pos == list.get(j - 1);
 
             /*Si el boolean és true*/

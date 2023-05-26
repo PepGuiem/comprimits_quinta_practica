@@ -12,7 +12,7 @@ public class RLE {
         /*Bucle que pasa per tots els bytes*/
         for (int i = 0; i < bytes.length; i++) {
 
-            /*Si i és major o igual a 1 i el byte anterior és igual a l'actual.*/
+            /*Si "i" és major o igual a 1 i el byte anterior és igual a l'actual.*/
             if (i >= 1 && bytes[i - 1] == bytes[i]) {
 
                 /*A contNum li sumem 1*/
@@ -96,8 +96,8 @@ public class RLE {
         return new int[]{cont, contNum};
     }
 
-    /*Si i és major o igual a 1 i el byte anterior i actual són iguals, i, si i + 1 és menor a la longitud
-    de l'array de bytes i el byte actual és diferent del següent o finalment i + 1 és igual a la longitud
+    /*Si "i" és major o igual a 1 i el byte anterior i actual són iguals, i, si "i" + 1 és menor a la longitud
+    de l'array de bytes i el byte actual és diferent del següent o finalment "i" + 1 és igual a la longitud
      de l'array del byte.*/
     private static boolean seHaDeAfegirElComptador(byte[] bytes, int i) {
         return (i >= 1 && bytes[i - 1] == bytes[i]) && ((i + 1 < bytes.length && bytes[i] != bytes[i + 1])
