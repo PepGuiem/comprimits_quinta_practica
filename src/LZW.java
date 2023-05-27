@@ -22,7 +22,7 @@ public class LZW {
                 afegirElementsDeLlistaAArxiu(list, os);
 
                 /*I fem que la llista comenci de nou*/
-                list = new ArrayList<>();
+                list.clear();
             }
 
             /*Si és el començament del bucle o el final del bucle*/
@@ -114,27 +114,43 @@ public class LZW {
 
     public static void decompress(InputStream is, OutputStream os) throws IOException {
         byte[] bytes = is.readAllBytes();
-        for (int i = 1; i < bytes.length;  i = i + 2) {
-            int index = bytes[i - 1] & 0xff;
-            if (index == 0){
-                os.write(bytes[i]);
+        List<Patro> li = new ArrayList<>();
+        for (int i = 1; i < bytes.length; i+=2) {
+            if (li.size() == 255){
+                pintarElementsAlArxiu(li,os);
+                li.clear();
             }else{
-                escriureBytes(index,bytes[i],bytes,os);
+                li.add(new Patro(bytes[i - 1], bytes[i]));
+                if (li.size() == (bytes.length / 2)){
+                    pintarElementsAlArxiu(li,os);
+                }
             }
         }
         is.close();
         os.close();
     }
 
-    private static void escriureBytes(int index, byte contingut, byte[] bytes, OutputStream os) throws IOException {
-        int index1 = index * 2;
-        List<Byte> li = new ArrayList<>();
-            while (index1 != 0){
-                li.add(contingut);
-                contingut = bytes[index1 - 1];
-                index1 = (bytes[index1 - 2] & 0xff) * 2;
+    private static void pintarElementsAlArxiu(List<Patro> li, OutputStream os) throws IOException {
+        for (int i = 0; i < li.size(); i++) {
+            int index = li.get(i).index;
+            if (index == 0){
+                os.write(li.get(i).aByte);
+            }else{
+                byte contingut = li.get(i).aByte;
+                escriureBytes(index,contingut,li,os);
             }
-            li.add(contingut);
+        }
+    }
+
+    private static void escriureBytes(int index, byte contingut, List<Patro> list, OutputStream os) throws IOException {
+        List<Byte> li = new ArrayList<>();
+            while (index > 0){
+                System.out.println("Index: " + index);
+                li.add(contingut);
+                contingut = list.get(index - 1).aByte;
+                index = list.get(index - 1).index;
+            }
+        li.add(contingut);
         for (int i = li.size() - 1; i >= 0; i--) {
             os.write(li.get(i));
         }

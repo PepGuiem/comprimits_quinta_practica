@@ -106,9 +106,10 @@ public class RLE {
 
     public static void decompress(InputStream is, OutputStream os) throws IOException {
         byte[] bytes = is.readAllBytes();
-        os.write(bytes[0]);
-        for (int i = 1; i < bytes.length; i++) {
-            if (bytes[i - 1] == bytes[i]) {
+        for (int i = 0; i < bytes.length; i++) {
+            if (i + 1 < bytes.length && bytes[i] == bytes[i + 1]) {
+                os.write(bytes[i]);
+                i++;
                 os.write(bytes[i]);
                 afegirNombres(bytes[i], bytes[i + 1], os);
                 i++;
